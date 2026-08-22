@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tear</title>
+<meta name="theme-color" content="#161E33">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tear">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#161E33;
+  --indigo-2:#1F2A45;
+  --indigo-3:#2C3A5C;
+  --linho:#EFE9DD;
+  --linho-2:#C9C0AE;
+  --garanca:#B4544A;   /* madder */
+  --acafrao:#D5A038;   /* weld */
+  --musgo:#6E9A78;     /* reserve */
+  --anil:#6E8DBE;
+  --fio:rgba(239,233,221,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--indigo);
+  color:var(--linho);
+  font-family:'Public Sans',system-ui,sans-serif;
+  font-size:16px; line-height:1.5;
+  padding-bottom:calc(72px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;margin:0;letter-spacing:-.02em;line-height:1.05}
+.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.wrap{max-width:520px;margin:0 auto;padding:0 18px}
+header{padding:26px 0 14px}
+.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--linho-2);font-weight:600}
+.sub{color:var(--linho-2);font-size:13.5px;line-height:1.45}
+
+/* ---- tear: a faixa tecida ---- */
+.tear{margin:18px 0 6px;border:1px solid var(--fio);border-radius:3px;overflow:hidden;background:var(--indigo-2)}
+.urdume{display:flex;height:58px}
+.fio{position:relative;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.fio::after{content:'';position:absolute;inset:0;
+  background-image:repeating-linear-gradient(90deg,rgba(0,0,0,.16) 0 1px,transparent 1px 4px),
+                   repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 5px);
+  mix-blend-mode:overlay;pointer-events:none}
+.trama{display:flex;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--linho-2);
+  border-top:1px solid var(--fio)}
+.trama div{padding:6px 4px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+
+/* ---- cartões ---- */
+.card{background:var(--indigo-2);border:1px solid var(--fio);border-radius:3px;padding:16px;margin:12px 0}
+.card.destaque{border-color:rgba(110,154,120,.45);background:linear-gradient(180deg,rgba(110,154,120,.13),transparent 70%),var(--indigo-2)}
+.card.alerta{border-color:rgba(180,84,74,.5);background:linear-gradient(180deg,rgba(180,84,74,.12),transparent 70%),var(--indigo-2)}
+.grande{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:600;line-height:1;letter-spacing:-.035em}
+.medio{font-family:'IBM Plex Mono',monospace;font-size:23px;font-weight:500;letter-spacing:-.02em}
+.rot{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--linho-2);font-weight:600;margin-bottom:7px}
+.linha{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:9px 0;border-bottom:1px solid var(--fio)}
+.linha:last-child{border-bottom:none}
+.linha span:first-child{font-size:14.5px}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ---- passos ---- */
+.passo{display:flex;gap:13px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--fio);cursor:pointer}
+.passo:last-child{border-bottom:none}
+.marca{flex:0 0 26px;height:26px;border:1.5px solid var(--linho-2);border-radius:2px;display:flex;align-items:center;
+  justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:var(--linho-2);
+  transition:all .18s ease;margin-top:1px}
+.passo.ok .marca{background:var(--musgo);border-color:var(--musgo);color:var(--indigo)}
+.passo.ok .ptit{color:var(--linho-2);text-decoration:line-through;text-decoration-thickness:1px}
+.ptit{font-weight:600;font-size:15px;line-height:1.3}
+.pval{font-family:'IBM Plex Mono',monospace;font-size:14px;color:var(--acafrao);font-weight:500}
+.passo.ok .pval{color:var(--linho-2)}
+.pdesc{font-size:12.5px;color:var(--linho-2);line-height:1.45;margin-top:4px}
+
+/* ---- fixas ---- */
+.fx{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--fio);cursor:pointer}
+.fx:last-child{border-bottom:none}
+.chk{flex:0 0 20px;height:20px;border:1.5px solid var(--linho-2);border-radius:2px;transition:all .16s}
+.fx.ok .chk{background:var(--musgo);border-color:var(--musgo)}
+.fx.ok .fxn{color:var(--linho-2);text-decoration:line-through}
+.fxn{flex:1;font-size:14px}
+.fxv{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--linho-2)}
+
+/* ---- inputs / botões ---- */
+input,textarea,select{font-family:'IBM Plex Mono',monospace;background:var(--indigo);color:var(--linho);
+  border:1px solid var(--fio);border-radius:2px;padding:11px 12px;font-size:15px;width:100%}
+textarea{font-family:'Public Sans',sans-serif;resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--anil);outline-offset:1px}
+button{font-family:'Public Sans',sans-serif;font-weight:600;font-size:14px;background:var(--linho);color:var(--indigo);
+  border:none;border-radius:2px;padding:12px 16px;cursor:pointer;transition:opacity .15s}
+button:active{opacity:.7}
+button.ghost{background:transparent;color:var(--linho);border:1px solid var(--fio)}
+button:focus-visible{outline:2px solid var(--anil);outline-offset:2px}
+
+/* ---- nav ---- */
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(22,30,51,.96);backdrop-filter:blur(14px);
+  border-top:1px solid var(--fio);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:50}
+nav button{flex:1;background:none;color:var(--linho-2);border:none;padding:11px 2px 13px;font-size:10.5px;
+  font-weight:600;letter-spacing:.05em;display:flex;flex-direction:column;align-items:center;gap:5px;border-radius:0}
+nav button.on{color:var(--linho)}
+nav button.on .ico{background:var(--acafrao)}
+.ico{width:17px;height:2px;background:var(--linho-2);transition:background .2s}
+.ico.i2{box-shadow:0 5px 0 var(--linho-2)}
+nav button.on .ico.i2{box-shadow:0 5px 0 var(--acafrao)}
+.tela{display:none;animation:sobe .32s ease}
+.tela.on{display:block}
+@keyframes sobe{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- chat ---- */
+.msg{padding:12px 14px;border-radius:3px;margin:9px 0;font-size:14.5px;line-height:1.5;white-space:pre-wrap}
+.msg.eu{background:var(--indigo-3);margin-left:32px}
+.msg.ia{background:var(--indigo-2);border-left:2px solid var(--acafrao);margin-right:14px}
+.sug{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.sug button{background:transparent;border:1px solid var(--fio);color:var(--linho-2);font-size:12.5px;padding:8px 11px;font-weight:400}
+.aviso{font-size:11.5px;color:var(--linho-2);line-height:1.4;margin-top:10px;font-style:italic}
+.pill{display:inline-block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:2px;font-weight:600}
+.pill.v{background:rgba(110,154,120,.2);color:var(--musgo)}
+.pill.a{background:rgba(213,160,56,.2);color:var(--acafrao)}
+.pill.r{background:rgba(180,84,74,.2);color:var(--garanca)}
+.hr{height:1px;background:var(--fio);margin:18px 0}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- ============ HOJE ============ -->
+<section class="tela on" id="t-hoje">
+  <header>
+    <div class="eyebrow">Tear</div>
+    <h1 style="font-size:31px;margin-top:5px">O mês em curso</h1>
+    <div class="sub" id="hoje-data" style="margin-top:6px"></div>
+  </header>
+
+  <div class="tear">
+    <div class="urdume" id="urdume"></div>
+    <div class="trama" id="trama"></div>
+  </div>
+  <div class="sub" style="font-size:11.5px;margin-bottom:14px">Cada fio é um destino do que entra. O verde é o que fica.</div>
+
+  <div class="card destaque">
+    <div class="rot">Reserva da Fedora</div>
+    <div class="grande" id="h-reserva">—</div>
+    <div class="sub" id="h-reserva-nota" style="margin-top:8px"></div>
+  </div>
+
+  <div class="duo">
+    <div class="card" style="margin:0">
+      <div class="rot">Sobra do mês</div>
+      <div class="medio" id="h-sobra">—</div>
+    </div>
+    <div class="card" style="margin:0">
+      <div class="rot">Comprometido</div>
+      <div class="medio" id="h-compr">—</div>
+    </div>
+  </div>
+
+  <div class="card" id="card-proximo">
+    <div class="rot">Próximo passo</div>
+    <div id="h-proximo" style="font-size:15px;font-weight:600"></div>
+    <div class="sub" id="h-proximo-d" style="margin-top:5px"></div>
+  </div>
+
+  <div class="card">
+    <div class="rot">As cinco regras</div>
+    <div style="font-size:13.5px;line-height:1.75;color:var(--linho-2)">
+      <div>Um entra, um sai — nenhum parcelamento novo.</div>
+      <div>Nunca deixar fatura cair no rotativo.</div>
+      <div>Crédito só para emergência da Fedora, à vista.</div>
+      <div>A reserva vem antes de antecipar parcela.</div>
+      <div>Primeiro sábado: 20 minutos só olhando saldos.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SALÁRIO ============ -->
+<section class="tela" id="t-mes">
+  <header>
+    <div class="eyebrow">Dia 31</div>
+    <h1 style="font-size:29px;margin-top:5px">O dia do salário</h1>
+    <div class="sub" style="margin-top:6px">Os dois consignados já saíram em folha. O que cai na conta é líquido.</div>
+  </header>
+
+  <div class="card">
+    <div class="rot">Entra na conta</div>
+    <div class="medio" id="m-entra">—</div>
+    <div class="sub" id="m-entra-d" style="margin-top:6px"></div>
+  </div>
+
+  <div class="card" id="passos"></div>
+
+  <div class="card">
+    <div class="rot" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Fixas do mês</span><span id="fx-cont" class="num" style="font-size:12px"></span>
+    </div>
+    <div id="fixas"></div>
+    <button class="ghost" style="width:100%;margin-top:14px" onclick="zerarFixas()">Começar mês novo</button>
+  </div>
+</section>
+
+<!-- ============ SEMANA ============ -->
+<section class="tela" id="t-semana">
+  <header>
+    <div class="eyebrow">Conta Vida</div>
+    <h1 style="font-size:29px;margin-top:5px">A semana</h1>
+    <div class="sub" style="margin-top:6px">R$ 760 toda segunda. Anote só o saldo na sexta — nada de lançar gasto por gasto.</div>
+  </header>
+  <div class="card" id="semanas"></div>
+  <div class="card">
+    <div class="rot">Onde os R$ 3.300 vão</div>
+    <div id="tetos"></div>
+  </div>
+</section>
+
+<!-- ============ FEDORA ============ -->
+<section class="tela" id="t-fedora">
+  <header>
+    <div class="eyebrow">Reserva e custeio</div>
+    <h1 style="font-size:29px;margin-top:5px">Fedora</h1>
+    <div class="sub" style="margin-top:6px">Tesouro Reserva, no app do BB. Resgate por Pix, qualquer hora, qualquer dia.</div>
+  </header>
+
+  <div class="card destaque">
+    <div class="rot">Saldo hoje</div>
+    <div style="display:flex;gap:9px;align-items:center;margin-top:4px">
+      <input class="num" id="f-saldo" type="number" step="0.01" placeholder="0,00" style="font-size:22px">
+      <button onclick="salvarSaldo()">Salvar</button>
+    </div>
+    <div class="sub" id="f-meta" style="margin-top:12px"></div>
+    <div style="height:5px;background:var(--indigo);border-radius:3px;overflow:hidden;margin-top:9px">
+      <div id="f-barra" style="height:100%;background:var(--musgo);width:0;transition:width .5s ease"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="rot">Custeio mensal</div>
+    <div id="f-custeio"></div>
+  </div>
+
+  <div class="card">
+    <div class="rot">Ainda falta levantar</div>
+    <div class="sub">Medicação de uso contínuo e material de fluidoterapia não apareceram na lista. São as duas linhas que podem mudar o custeio para cima — pergunte à equipe do Afeto Felino e some aqui.</div>
+  </div>
+</section>
+
+<!-- ============ AJUDA ============ -->
+<section class="tela" id="t-ajuda">
+  <header>
+    <div class="eyebrow">Dúvidas</div>
+    <h1 style="font-size:29px;margin-top:5px">Perguntar</h1>
+    <div class="sub" style="margin-top:6px">Conhece o seu plano inteiro: contratos, taxas, prazos e as decisões que você tomou.</div>
+  </header>
+
+  <div class="sug" id="sugestoes"></div>
+  <div id="chat"></div>
+
+  <div class="card" style="position:sticky;bottom:14px;background:var(--indigo-2)">
+    <textarea id="pergunta" rows="2" placeholder="Escreva a sua dúvida"></textarea>
+    <button style="width:100%;margin-top:9px" id="btn-perguntar" onclick="perguntar()">Perguntar</button>
+    <div class="aviso">Para decisões de valor alto — contrato novo, quitação, mudança — confira as contas antes de assinar. Este app ajuda com o dia a dia.</div>
+    <button class="ghost" style="width:100%;margin-top:9px;font-size:12.5px" onclick="configChave()">Configurar a chave</button>
+  </div>
+
+  <div class="hr"></div>
+  <div class="card">
+    <div class="rot">Levar para a planilha</div>
+    <div class="sub">Não há sincronização automática entre o app e o arquivo. O botão abaixo copia os dados do mês em formato de tabela, para você colar na planilha quando quiser.</div>
+    <button class="ghost" style="width:100%;margin-top:12px" onclick="exportar()">Copiar dados do mês</button>
+    <div id="exp-ok" class="sub" style="margin-top:8px"></div>
+  </div>
+</section>
+
+</div>
+
+<nav>
+  <button class="on" onclick="ir('hoje',this)"><span class="ico"></span>Hoje</button>
+  <button onclick="ir('mes',this)"><span class="ico i2"></span>Salário</button>
+  <button onclick="ir('semana',this)"><span class="ico"></span>Semana</button>
+  <button onclick="ir('fedora',this)"><span class="ico i2"></span>Fedora</button>
+  <button onclick="ir('ajuda',this)"><span class="ico"></span>Perguntar</button>
+</nav>
+
+<script>
+/* ============ PLANO ============ */
+const P = {
+  salario:11685.17, robson:400,
+  carro:2366.70, vida:3300, semanal:760, fedoraCusteio:806.66,
+  fixasSetDez:5245.15, fixasJan:4934.40,
+  metaReserva:6000,
+  consignados:[
+    {nome:'Bradesco (portado, ex-Unicred)', parcela:2355.62, prazo:92, taxa:'CET 17,99% a.a.'},
+    {nome:'Bradesco (refinanciado)', parcela:1145.00, prazo:96, taxa:'1,43% a.m. · CET 20,37% a.a.'}
+  ],
+  fixas:[
+    ['Aluguel (QuintoAndar)',2326.62,'Boleto'],['Condomínio',917.00,'Débito'],
+    ['Luz',199.00,'Débito'],['Gás',180.00,'Débito'],
+    ['Seguro do carro',210.21,'Cartão BB'],['Manutenção (revisão 4x)',410.75,'Cartão BB'],
+    ['IPVA (provisão)',133.33,'Guardar'],['Licenciamento (provisão)',16.67,'Guardar'],
+    ['Seguro de vida',52.15,'Débito'],['Seguro casa',45.55,'Débito'],
+    ['Claro',79.90,'Débito'],['TIM',37.87,'Débito'],['Sindicato',80.80,'Folha'],
+    ['Revista Memória LGBT',149.00,'Bradesco'],['Wellhub',100.00,'Bradesco'],
+    ['Netflix',54.80,'Bradesco'],['Spotify',31.90,'Bradesco'],['Claude',110.00,'Bradesco'],
+    ['Apoia.se',15.00,'Bradesco'],['Petlove',94.60,'Bradesco']
+  ],
+  tetos:[['Alimentação',1800],['Transporte',400],['Saúde',350],['Lazer',300],
+    ['Trabalho / Revista',150],['Compras pessoais',100],['Assinaturas avulsas',50],
+    ['Impostos e taxas',50],['Outros',100]],
+  custeio:[['Ração seca (ACC Sterilised)',148.64],['Sachês (GP trato urinário)',80.70],
+    ['Beneflora',129.80],['Vonal',60.49],['Areia',52.43],['Consultas (diluído)',80],
+    ['Exames (diluído)',120],['Petlove (sai nas Fixas)',94.60],['Outros',40]]
+};
+
+const brl = n => 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const chaveMes = () => { const d=new Date(); return `mes:${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; };
+const ehSetembro = () => { const d=new Date(); return d.getFullYear()===2026 && d.getMonth()===8; };
+
+let M = {passos:{}, fixas:{}, semanas:[null,null,null,null], reserva:0};
+
+/* ============ STORAGE ============ */
+async function ler(k, def){
+  try { const v = localStorage.getItem('tear:'+k); return v ? JSON.parse(v) : def; }
+  catch(e){ return def; }
+}
+async function gravar(k,v){
+  try { localStorage.setItem('tear:'+k, JSON.stringify(v)); }
+  catch(e){ console.error('Não deu para gravar', e); }
+}
+
+async function carregar(){
+  M = await ler(chaveMes(), {passos:{}, fixas:{}, semanas:[null,null,null,null], reserva:0});
+  const r = await ler('fedora:reserva', 0);
+  M.reserva = r;
+  desenhar();
+}
+async function salvarMes(){ await gravar(chaveMes(), M); }
+
+/* ============ NÚMEROS ============ */
+function fixasHoje(){
+  const d=new Date();
+  return (d.getFullYear()===2026 && d.getMonth()>=8) ? P.fixasSetDez : P.fixasJan;
+}
+function entra(){ return (ehSetembro() ? 12830.17 : P.salario) + P.robson; }
+function principal(){ return fixasHoje() + P.carro; }
+function reservaMes(){ return entra() - principal() - P.vida - P.fedoraCusteio; }
+function comprometido(){ const sal = ehSetembro()?12830.17:P.salario; return (fixasHoje()+P.carro)/sal; }
+
+/* ============ TEAR ============ */
+function desenharTear(){
+  const total = entra();
+  const fios = [
+    {n:'Fixas', v:fixasHoje(), c:'var(--anil)'},
+    {n:'Carro', v:P.carro, c:'var(--garanca)'},
+    {n:'Vida', v:P.vida, c:'var(--acafrao)'},
+    {n:'Fedora', v:P.fedoraCusteio + reservaMes(), c:'var(--musgo)'}
+  ];
+  document.getElementById('urdume').innerHTML = fios.map(f=>
+    `<div class="fio" style="flex:${f.v};background:${f.c}"></div>`).join('');
+  document.getElementById('trama').innerHTML = fios.map(f=>
+    `<div style="flex:${f.v}">${f.n}</div>`).join('');
+}
+
+/* ============ TELAS ============ */
+function desenhar(){
+  const d = new Date();
+  const meses=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  const ultimo = new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+  const faltam = ultimo - d.getDate();
+  document.getElementById('hoje-data').textContent =
+    `${d.getDate()} de ${meses[d.getMonth()]}` + (faltam>0 ? ` · faltam ${faltam} dia${faltam>1?'s':''} para o salário` : ' · dia do salário');
+
+  desenharTear();
+
+  document.getElementById('h-reserva').textContent = brl(M.reserva);
+  const falta = P.metaReserva - M.reserva;
+  document.getElementById('h-reserva-nota').textContent = falta > 0
+    ? `Faltam ${brl(falta)} para os R$ 6.000 que cobrem uma internação. Nesse ritmo, dezembro resolve.`
+    : 'A meta foi atingida. A partir daqui, o que sobrar pode ter outros destinos.';
+
+  document.getElementById('h-sobra').textContent = brl(reservaMes());
+  document.getElementById('h-compr').textContent = (comprometido()*100).toFixed(1).replace('.',',')+'%';
+
+  // próximo passo
+  const feitos = PASSOS.filter(p=>M.passos[p.id]).length;
+  const prox = PASSOS.find(p=>!M.passos[p.id]);
+  const cp = document.getElementById('card-proximo');
+  if(prox){
+    document.getElementById('h-proximo').textContent = prox.titulo;
+    document.getElementById('h-proximo-d').textContent = prox.valor==='—' ? prox.desc.slice(0,90) : prox.valor;
+    cp.className = 'card';
+  } else {
+    document.getElementById('h-proximo').textContent = 'Mês distribuído';
+    document.getElementById('h-proximo-d').textContent = 'Os cinco passos estão feitos. Volte no primeiro sábado para olhar os saldos.';
+    cp.className = 'card destaque';
+  }
+
+  document.getElementById('m-entra').textContent = brl(entra());
+  document.getElementById('m-entra-d').textContent = ehSetembro()
+    ? 'Setembro ainda não tem o desconto do consignado do Bradesco — a 1ª parcela vence 01/10. Entra inteiro.'
+    : `Salário líquido ${brl(P.salario)} + Robson ${brl(P.robson)}. Os consignados (${brl(3500.62)}) já saíram em folha.`;
+
+  desenharPassos(); desenharFixas(); desenharSemanas(); desenharTetos(); desenharFedora();
+}
+
+const PASSOS = [
+  {id:'vida', titulo:'Transferir para a Conta Vida', valor:brl(760),
+   desc:'Só a primeira semana. As outras saem automaticamente toda segunda-feira. É o dinheiro de mercado, comida, transporte e lazer.'},
+  {id:'reserva', titulo:'Aplicar a reserva da Fedora', valor:'',
+   desc:'Tesouro Reserva, no app de investimentos do BB. Aplique no mesmo dia — dinheiro parado na corrente some sem que ninguém decida nada.'},
+  {id:'custeio', titulo:'Separar o custeio da Fedora', valor:brl(806.66),
+   desc:'Ração, sachês, Beneflora, Vonal, areia, consultas e exames. Pode ficar na conta corrente do BB: é gasto do mês, não reserva.'},
+  {id:'conferir', titulo:'Conferir o que ficou na Principal', valor:'',
+   desc:'É o que paga as fixas e o financiamento do carro. Você não faz nada aqui — só confere que o saldo bateu.'},
+  {id:'checklist', titulo:'Virar o checklist das Fixas', valor:'—',
+   desc:'Toque em "Começar mês novo" na aba Salário e vá marcando conforme cada despesa sair.'}
+];
+
+function desenharPassos(){
+  const el = document.getElementById('passos');
+  el.innerHTML = PASSOS.map((p,i)=>{
+    const v = p.id==='reserva' ? brl(reservaMes()) : (p.id==='conferir' ? brl(principal()) : p.valor);
+    return `<div class="passo ${M.passos[p.id]?'ok':''}" onclick="togglePasso('${p.id}')">
+      <div class="marca">${M.passos[p.id]?'✓':i+1}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline">
+          <div class="ptit">${p.titulo}</div><div class="pval">${v}</div>
+        </div>
+        <div class="pdesc">${p.desc}</div>
+      </div></div>`;
+  }).join('');
+}
+function togglePasso(id){ M.passos[id]=!M.passos[id]; salvarMes(); desenhar(); }
+
+function desenharFixas(){
+  const el=document.getElementById('fixas');
+  el.innerHTML = P.fixas.map((f,i)=>
+    `<div class="fx ${M.fixas[i]?'ok':''}" onclick="toggleFixa(${i})">
+      <div class="chk"></div><div class="fxn">${f[0]}</div>
+      <div class="fxv">${brl(f[1])}</div></div>`).join('');
+  const n = P.fixas.filter((f,i)=>M.fixas[i]).length;
+  document.getElementById('fx-cont').textContent = `${n}/${P.fixas.length}`;
+}
+function toggleFixa(i){ M.fixas[i]=!M.fixas[i]; salvarMes(); desenharFixas(); }
+function zerarFixas(){ M.fixas={}; M.passos={}; M.semanas=[null,null,null,null]; salvarMes(); desenhar(); }
+
+function desenharSemanas(){
+  const el=document.getElementById('semanas');
+  el.innerHTML = M.semanas.map((s,i)=>
+    `<div class="linha"><span>Semana ${i+1}<br><span class="sub" style="font-size:11.5px">recebeu ${brl(P.semanal)}</span></span>
+      <input class="num" style="width:120px;text-align:right;font-size:14px" type="number" step="0.01"
+        placeholder="saldo sexta" value="${s??''}" onchange="setSemana(${i},this.value)"></div>`).join('')
+    + `<div class="linha" style="margin-top:6px"><span style="font-weight:600">Sobrou no mês</span>
+        <span class="num" style="color:var(--musgo)">${brl(M.semanas.reduce((a,b)=>a+(parseFloat(b)||0),0))}</span></div>`
+    + `<div class="sub" style="margin-top:10px;font-size:12px">O que sobrar da conta Vida no fim do mês vai para a reserva da Fedora.</div>`;
+}
+function setSemana(i,v){ M.semanas[i]= v===''?null:parseFloat(v); salvarMes(); desenharSemanas(); }
+
+function desenharTetos(){
+  document.getElementById('tetos').innerHTML = P.tetos.map(t=>
+    `<div class="linha"><span>${t[0]}</span><span class="num">${brl(t[1])}</span></div>`).join('');
+}
+
+function desenharFedora(){
+  document.getElementById('f-saldo').value = M.reserva || '';
+  const pc = Math.min(100, (M.reserva/P.metaReserva)*100);
+  document.getElementById('f-barra').style.width = pc+'%';
+  document.getElementById('f-meta').textContent =
+    `${pc.toFixed(0)}% da meta de ${brl(P.metaReserva)} — o valor de uma internação. Entra ${brl(reservaMes())} por mês, mais R$ 5.000 do 13º em dezembro.`;
+  const tot = P.custeio.reduce((a,b)=>a+b[1],0);
+  document.getElementById('f-custeio').innerHTML = P.custeio.map(c=>
+    `<div class="linha"><span>${c[0]}</span><span class="num">${brl(c[1])}</span></div>`).join('')
+    + `<div class="linha"><span style="font-weight:600">Total</span><span class="num" style="font-weight:600">${brl(tot)}</span></div>`;
+}
+async function salvarSaldo(){
+  const v = parseFloat(document.getElementById('f-saldo').value)||0;
+  M.reserva=v; await gravar('fedora:reserva', v); await salvarMes(); desenhar();
+}
+
+/* ============ NAV ============ */
+function ir(t,b){
+  document.querySelectorAll('.tela').forEach(s=>s.classList.remove('on'));
+  document.getElementById('t-'+t).classList.add('on');
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); window.scrollTo(0,0);
+}
+
+/* ============ EXPORTAR ============ */
+function exportar(){
+  const d=new Date();
+  let csv = `Mês;${d.getMonth()+1}/${d.getFullYear()}\n\nENTRA;${entra().toFixed(2)}\n`;
+  csv += `Fixas;${fixasHoje().toFixed(2)}\nCarro;${P.carro.toFixed(2)}\nVida;${P.vida.toFixed(2)}\n`;
+  csv += `Fedora custeio;${P.fedoraCusteio.toFixed(2)}\nReserva do mês;${reservaMes().toFixed(2)}\n`;
+  csv += `Reserva acumulada;${M.reserva.toFixed(2)}\n\nSEMANAS\n`;
+  M.semanas.forEach((s,i)=>{ csv += `Semana ${i+1};${s??''}\n`; });
+  csv += `\nFIXAS PAGAS\n`;
+  P.fixas.forEach((f,i)=>{ csv += `${f[0]};${f[1].toFixed(2)};${M.fixas[i]?'Sim':'Não'}\n`; });
+  navigator.clipboard.writeText(csv).then(
+    ()=>{ document.getElementById('exp-ok').textContent='Copiado. Cole na planilha com Ctrl+V e use "Texto para colunas" com ponto e vírgula.'; },
+    ()=>{ document.getElementById('exp-ok').textContent='O navegador bloqueou a cópia. Selecione e copie manualmente os dados da aba Hoje.'; }
+  );
+}
+
+/* ============ IA ============ */
+const CONTEXTO = `Você ajuda Tony com o plano financeiro dele, dentro de um app chamado Tear. Responda em português do Brasil, curto e direto, no máximo 4 frases quando der. Nada de listas longas.
+
+SITUAÇÃO
+Professor e coordenador de curso na UNESPAR/EMBAP, Curitiba. Mora com o companheiro Robson e uma gata idosa, Fedora, com doença renal crônica. Em agosto de 2026 reestruturou a dívida: o mês fechava em -R$ 6.509 e passou a fechar positivo.
+
+RENDA
+Salário líquido R$ 11.685,17 (já sem os dois consignados, que saem em folha). Robson repõe R$ 400/mês enquanto durar o consignado. Entra na conta R$ 12.085,17.
+R$ 2.000 do salário são comissão de coordenação e acabam em dezembro de 2027.
+
+DÍVIDAS
+1) Consignado Bradesco portado do Unicred: R$ 2.355,62 x 92 meses, CET 17,99% a.a.
+2) Consignado Bradesco refinanciado: R$ 1.145,00 x 96 meses, 1,43% a.m., CET 20,37% a.a.
+3) Financiamento do carro (Ailos): R$ 2.366,70 x 50 meses. Quitação antecipada ≈ R$ 81.778,78.
+Carro: Fiat Argo Trekking 1.3 CVT, modelo 2026, preto. 3.671 km rodados. Seguro BB Auto Total R$ 2.522,47/ano em 12x de R$ 210,21.
+
+ESTRUTURA
+Conta Principal recebe o salário e paga fixas (R$ 5.245,15 até dez/2026, depois R$ 4.934,40) e o carro.
+Conta Vida: R$ 3.300/mês, R$ 760 por semana, único cartão na carteira e é de débito.
+Fedora: custeio R$ 806,66 + reserva no Tesouro Reserva do BB (resgate por Pix, 24/7). Meta de R$ 6.000.
+Sobra R$ 366,66/mês até dezembro, R$ 677,41 a partir de janeiro de 2027.
+
+CARTÕES
+BB (limite R$ 15.000): seguro do carro, revisão e emergência da Fedora. Só coisas com prazo para acabar.
+Bradesco: assinaturas recorrentes de valor fixo, débito automático da fatura, nunca parcelado.
+Ailos e Amex cancelados.
+
+REGRAS
+1. Nenhum parcelamento novo enquanto o consignado existir.
+2. Nunca deixar fatura no rotativo.
+3. Crédito só para emergência da Fedora, e à vista.
+4. A reserva vem antes de antecipar parcela.
+5. Primeiro sábado do mês, 20 minutos só olhando saldos.
+
+DECISÕES JÁ TOMADAS
+Dezembro/2026: R$ 5.000 do 13º para a reserva da Fedora, o resto amortizando o consignado com redução de PRAZO.
+Dezembro/2027: amortizar com redução de PARCELA — inverte a regra, porque a renda vai cair.
+Janeiro/2028: se a renda alternativa estiver abaixo de R$ 1.500/mês, o carro vai à venda.
+Novembro/2026: decidir sobre quitar o financiamento do carro com consignado a 1,43%.
+
+COMO RESPONDER
+Aritmética simples você faz. Para decisão de valor alto — contrato novo, quitação, mudança de casa — diga que vale conferir com calma antes de assinar, e lembre a lição que ele aprendeu comparando nove propostas: taxa nominal não decide nada, só o CET anual e o custo total.
+Não moralize sobre gasto. Ele não tem problema de gasto, teve problema de prazo. Lazer e o cuidado da Fedora foram preservados de propósito.`;
+
+const SUGESTOES = ['Posso parcelar isso?','Quanto tenho para gastar esta semana?','O que fazer com o 13º?','Vale antecipar parcela?','Posso usar o cartão?'];
+
+document.getElementById('sugestoes').innerHTML = SUGESTOES.map(s=>
+  `<button onclick="document.getElementById('pergunta').value='${s}';perguntar()">${s}</button>`).join('');
+
+let historico=[];
+async function perguntar(){
+  const inp=document.getElementById('pergunta');
+  const q=inp.value.trim(); if(!q) return;
+  const btn=document.getElementById('btn-perguntar');
+  const chat=document.getElementById('chat');
+  inp.value=''; btn.disabled=true; btn.textContent='Pensando…';
+  chat.insertAdjacentHTML('beforeend', `<div class="msg eu">${q.replace(/</g,'&lt;')}</div>`);
+  chat.scrollIntoView({block:'end',behavior:'smooth'});
+
+  const estado = `\n\nESTADO DE HOJE: reserva da Fedora ${brl(M.reserva)}. Sobra prevista do mês ${brl(reservaMes())}. Passos do dia do salário feitos: ${PASSOS.filter(p=>M.passos[p.id]).length} de 5.`;
+  historico.push({role:'user', content:q});
+  const chave = localStorage.getItem('tear:apikey');
+  if(!chave){
+    chat.insertAdjacentHTML('beforeend', `<div class="msg ia">Falta configurar a chave da API. Toque em "Configurar a chave" logo abaixo do campo de pergunta. Ela fica guardada só neste aparelho.</div>`);
+    btn.disabled=false; btn.textContent='Perguntar'; return;
+  }
+  try{
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':chave,
+               'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:1000,
+        system: CONTEXTO + estado,
+        messages: historico.slice(-8)
+      })
+    });
+    const data = await r.json();
+    const txt = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n') || 'Não consegui responder agora. Tente de novo.';
+    historico.push({role:'assistant', content:txt});
+    chat.insertAdjacentHTML('beforeend', `<div class="msg ia">${txt.replace(/</g,'&lt;')}</div>`);
+  }catch(e){
+    chat.insertAdjacentHTML('beforeend', `<div class="msg ia">Sem conexão com o serviço agora. Tente de novo em instantes.</div>`);
+  }
+  btn.disabled=false; btn.textContent='Perguntar';
+  chat.lastElementChild.scrollIntoView({block:'end',behavior:'smooth'});
+}
+
+function configChave(){
+  const atual = localStorage.getItem('tear:apikey') || '';
+  const v = prompt('Cole aqui a sua chave da API da Anthropic (começa com sk-ant-). Ela fica guardada só neste aparelho, nunca sai dele a não ser para a própria Anthropic. Deixe em branco para apagar.', atual);
+  if(v===null) return;
+  if(v.trim()==='') { localStorage.removeItem('tear:apikey'); alert('Chave apagada.'); }
+  else { localStorage.setItem('tear:apikey', v.trim()); alert('Chave guardada. Pode perguntar.'); }
+}
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+
+carregar();
+</script>
+</body>
+</html>
